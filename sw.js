@@ -1,5 +1,5 @@
-// Service Worker بسيط لخطّي — يدعم التثبيت والعمل بدون إنترنت للهيكل الأساسي
-const CACHE = 'khatti-v2';
+ // Service Worker بسيط لخطّي — يدعم التثبيت والعمل بدون إنترنت للهيكل الأساسي
+const CACHE = 'khatti-v3';
 const SHELL = ['./', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

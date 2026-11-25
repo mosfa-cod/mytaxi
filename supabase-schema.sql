@@ -1,4 +1,4 @@
--- =====================================================================
+ -- =====================================================================
 -- خطّي (Khatti) — مخطط قاعدة البيانات
 -- شغّل هذا الملف كاملاً في: Supabase Dashboard → SQL Editor → Run
 -- =====================================================================
@@ -71,6 +71,10 @@ drop policy if exists "khatti_open_students" on public.students;
 create policy "khatti_open_drivers"  on public.drivers        for all to anon, authenticated using (true) with check (true);
 create policy "khatti_open_network"  on public.driver_network for all to anon, authenticated using (true) with check (true);
 create policy "khatti_open_students" on public.students       for all to anon, authenticated using (true) with check (true);
+
+-- صلاحيات الجداول (مطلوبة في مشاريع Supabase الجديدة)
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on public.drivers, public.driver_network, public.students to anon, authenticated;
 
 -- 6) (اختياري) سائق تجريبي لتبدأ به — احذفه بعد التجربة
 -- insert into public.drivers (name, phone, car_model, capacity, route_areas, school_name, network_code, subscription_status, subscription_end)

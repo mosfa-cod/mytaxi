@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -51,7 +51,7 @@ label{display:block;font-size:13px;font-weight:700;color:#cbd5e1;margin:0 0 4px}
 #map{height:300px;border-radius:14px;border:1px solid var(--line);background:#0b1322}
 .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.9)}
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#0f172a;color:#f8fafc}
-.bottom{position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(9,14,26,.97);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+.bottom{position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(9,14,26,.97);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,1fr);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
 .bottom button{background:none;border:0;color:var(--mut);font:inherit;font-weight:800;font-size:12px;padding:6px 2px;border-radius:12px;min-height:56px;cursor:pointer;position:relative}
 .bottom button i{display:block;font-style:normal;font-size:22px;line-height:1.1}
 .bottom button.on{color:#fff;background:var(--g2)}
@@ -65,6 +65,10 @@ label{display:block;font-size:13px;font-weight:700;color:#cbd5e1;margin:0 0 4px}
 #modal{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.78);display:flex;align-items:flex-end;justify-content:center;padding:12px}
 #modal>div{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;width:100%;max-width:460px;max-height:90vh;overflow:auto}
 .ro{background:#070d19;border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-family:monospace;font-size:12px;color:#6ee7b7;word-break:break-all;direction:ltr;text-align:left}
+details.card>summary{cursor:pointer;font-weight:800;font-size:16px;min-height:40px;display:flex;align-items:center;list-style:none}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::after{content:"▾";margin-right:auto;color:var(--mut)}
+details.card[open]>summary{margin-bottom:10px}
 </style>
 </head>
 <body>
@@ -102,47 +106,56 @@ label{display:block;font-size:13px;font-weight:700;color:#cbd5e1;margin:0 0 4px}
     <div class="card">
       <div class="row sp">
         <div><div id="dh-pills" class="row"></div><h2 id="dh-title" style="margin-top:6px"></h2><div id="dh-sub" class="mut"></div></div>
-        <div class="card2" style="text-align:center;margin:0;min-width:120px"><div class="mut sm">المقاعد المشغولة</div><div id="dh-seats" class="kpi" style="color:var(--g)"></div><div id="dh-rem" class="sm" style="color:var(--am);font-weight:800"></div></div>
+        <div class="card2" style="text-align:center;margin:0;min-width:110px"><div class="mut sm">المقاعد</div><div id="dh-seats" class="kpi" style="color:var(--g)"></div><div id="dh-rem" class="sm" style="color:var(--am);font-weight:800"></div></div>
       </div>
-      <form id="rt-form" onsubmit="saveRoute(event)" class="grid" style="margin-top:12px">
-        <div><label for="rt-school">المدرسة الوجهة</label><input id="rt-school" class="input" required></div>
-        <div><label for="rt-areas">نقاط المسار (مفصولة بفاصلة)</label><input id="rt-areas" class="input" required placeholder="الحي الأول، الحي الثاني"></div>
-        <div><label for="rt-cap">سعة المقاعد</label><input id="rt-cap" class="input" type="number" min="1" max="30" required></div>
-        <div style="align-self:end"><button class="btn g w" type="submit">💾 حفظ الخط</button></div>
-      </form>
-    </div>
-
-    <div class="card">
-      <div class="row sp">
-        <div><h3>🗺️ خريطة المسار الصباحي</h3><div id="map-sum" class="mut sm"></div></div>
-        <div class="row"><span id="map-km" class="pill sk">-- كم</span><button class="btn g s" onclick="navAll()">🧭 ملاحة المسار كاملاً</button></div>
-      </div>
-      <div id="map" style="margin-top:10px"></div>
     </div>
 
     <div id="dabs"></div>
 
     <div class="card">
-      <div class="row sp"><h3>✅ طلاب اليوم الحاضرون</h3><span id="dcount" class="pill sk"></span></div>
+      <div class="row sp"><h3>✅ رحلة اليوم</h3><span id="dcount" class="pill sk"></span></div>
+      <button class="btn g w" style="margin-bottom:10px" onclick="navAll()">🧭 ابدأ الملاحة للمسار كله</button>
       <div id="dlist"></div>
-      <button class="btn w" onclick="newTrip()">🔄 بدء رحلة جديدة (إعادة حالات الاستلام)</button>
+      <button class="btn w" onclick="newTrip()">🔄 بدء رحلة جديدة</button>
     </div>
 
-    <div class="card">
-      <h3>💰 الاشتراكات الشهرية للطلاب</h3>
+    <details class="card" id="more-map" ontoggle="if(this.open){renderMap();if(map)setTimeout(()=>map.invalidateSize(),150)}">
+      <summary>🗺️ الخريطة</summary>
+      <div class="row sp" style="margin-bottom:8px"><div id="map-sum" class="mut sm"></div><span id="map-km" class="pill sk">-- كم</span></div>
+      <div id="map"></div>
+    </details>
+
+    <details class="card">
+      <summary>💰 الاشتراكات الشهرية للطلاب</summary>
       <div id="dfees"></div>
-    </div>
+    </details>
 
-    <div class="card">
-      <h3>🔗 رابط الحجز الذكي</h3>
-      <p class="mut sm">انشره في إعلانات فيسبوك وجروبات المنطقة — يفتح مباشرة نموذج الحجز على خطك.</p>
+    <details class="card">
+      <summary>⚙️ إعدادات الخط</summary>
+      <form id="rt-form" onsubmit="saveRoute(event)" class="grid">
+        <div><label for="rt-school">المدرسة الوجهة</label><input id="rt-school" class="input" required></div>
+        <div><label for="rt-areas">نقاط المسار (مفصولة بفاصلة)</label><input id="rt-areas" class="input" required placeholder="الحي الأول، الحي الثاني"></div>
+        <div><label for="rt-cap">سعة المقاعد</label><input id="rt-cap" class="input" type="number" min="1" max="30" required></div>
+        <div style="align-self:end"><button class="btn g w" type="submit">💾 حفظ الخط</button></div>
+      </form>
+    </details>
+
+    <details class="card">
+      <summary>🔗 رابط الحجز لأولياء الأمور</summary>
+      <p class="mut sm">انشره في إعلانات فيسبوك وجروبات المنطقة — يفتح نموذج الحجز على خطك مباشرة.</p>
       <div id="sharelink" class="ro"></div>
       <div class="row" style="margin-top:8px">
         <button class="btn g" onclick="copyLink(me().network_code)">📋 نسخ الرابط</button>
         <button class="btn" onclick="window.open(bookingLink(me().network_code),'_blank')">👁️ معاينة</button>
-        <button class="btn rd" onclick="driverLogout()">خروج</button>
       </div>
-    </div>
+    </details>
+
+    <details class="card">
+      <summary>🔀 خيارات إضافية</summary>
+      <p class="mut sm">شبكة تبادل الطلبات تتيح لك تحويل الطالب الذي لا تستطيع خدمته لزميل. اختيارية تماماً.</p>
+      <button id="btn-net" class="btn w" onclick="toggleNet()"></button>
+      <button class="btn rd w" style="margin-top:8px" onclick="driverLogout()">تسجيل الخروج</button>
+    </details>
   </div>
 </section>
 
@@ -150,21 +163,22 @@ label{display:block;font-size:13px;font-weight:700;color:#cbd5e1;margin:0 0 4px}
 <section id="sec-requests" hidden>
   <div id="rq-login" class="card"><h2>سجّل دخول السائق أولاً</h2><p class="mut">هذه الشاشة خاصة بالسائق.</p><button class="btn g" onclick="switchTab('driver')">الذهاب لدخول السائق</button></div>
   <div id="rq-main" hidden>
-    <div class="card" style="border-color:#1b6a8c">
+    <div class="card" id="rq-inbox-card" style="border-color:#1b6a8c">
       <div class="row sp"><div><h2>📥 طلبات محوّلة إليك من الشبكة</h2><div class="mut sm">زملاؤك رشّحوا لك هؤلاء الطلاب — اقبل أو ارفض</div></div><span id="rq-in-n" class="pill sk"></span></div>
       <div id="rq-in" style="margin-top:10px"></div>
     </div>
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
-      <div class="card"><div class="row sp"><h3 style="color:#6ee7b7">مطابق للمسار</h3><span id="rq-m-n" class="pill g"></span></div><div id="rq-m"></div></div>
-      <div class="card"><div class="row sp"><h3 style="color:#fcd34d">فائض / خارج المسار</h3><span id="rq-o-n" class="pill am"></span></div><div id="rq-o"></div></div>
+      <div class="card"><div class="row sp"><h3 id="rq-m-title" style="color:#6ee7b7">مطابق للمسار</h3><span id="rq-m-n" class="pill g"></span></div><div id="rq-m"></div></div>
+      <div class="card" id="rq-o-card"><div class="row sp"><h3 style="color:#fcd34d">فائض / خارج المسار</h3><span id="rq-o-n" class="pill am"></span></div><div id="rq-o"></div></div>
     </div>
-    <div class="card">
+    <div class="card" id="rq-net-card">
       <div class="row sp">
         <div><h3>🤝 شبكة السائقين الموثوقين</h3><div class="mut sm">اربط زميلاً بكوده لتبادل الطلاب الفائضين</div></div>
         <form onsubmit="linkPeer(event)" class="row"><input id="peer-code" class="input" style="width:150px" required placeholder="SH-305" dir="ltr" autocapitalize="characters"><button class="btn g" type="submit">ربط</button></form>
       </div>
       <div id="rq-peers" class="grid" style="margin-top:10px"></div>
     </div>
+    <button id="btn-net2" class="btn w" onclick="toggleNet()"></button>
   </div>
 </section>
 
@@ -229,10 +243,8 @@ label{display:block;font-size:13px;font-weight:700;color:#cbd5e1;margin:0 0 4px}
 </main>
 
 <nav class="bottom" id="bnav">
-  <button id="nv-driver" onclick="switchTab('driver')"><i>🚐</i>السائق</button>
-  <button id="nv-requests" onclick="switchTab('requests')"><i>🔀</i>الطلبات<span id="nv-bdg" class="bdg" hidden></span></button>
-  <button id="nv-parent" onclick="switchTab('parent')"><i>👨‍👩‍👧</i>ولي الأمر</button>
-  <button id="nv-admin" onclick="switchTab('admin')"><i>👑</i>الإدارة</button>
+  <button id="nv-driver" onclick="switchTab('driver')"><i>🚐</i>رحلة اليوم</button>
+  <button id="nv-requests" onclick="switchTab('requests')"><i>📥</i>الطلبات<span id="nv-bdg" class="bdg" hidden></span></button>
 </nav>
 
 <div id="toasts"></div>
@@ -257,8 +269,8 @@ label{display:block;font-size:13px;font-weight:700;color:#cbd5e1;margin:0 0 4px}
 // =====================================================================
 // الإعدادات
 // =====================================================================
-const SUPABASE_URL = 'https://htuddqiarynvpckyvijf.supabase.co/';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0dWRkcWlhcnludnBja3l2aWpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2MzkxMTgsImV4cCI6MjExMTIxNTExOH0.mwk_KYsZ6OftGfxCSAfp0kFiKdWK0d0rWY62hveDSqE';
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 const ADMIN_PIN = '1234';            // غيّره قبل النشر (حماية بسيطة لواجهة الإدارة فقط)
 const DEFAULT_MONTHLY_FEE = 450;     // الاشتراك الشهري الافتراضي للطالب (ج.م)
 
@@ -386,14 +398,16 @@ function resetDemo() {
 let session = null;
 try { session = JSON.parse(localStorage.getItem(SESSION_KEY)); } catch (_) {}
 const me = () => (session && DB.drivers.find(d => d.id === session.driverId)) || null;
-const URL_CODE = normCode(new URLSearchParams(location.search).get('driver'));
-const PARENT_MODE = !!URL_CODE;
+const _qp = new URLSearchParams(location.search);
+const URL_CODE = normCode(_qp.get('driver'));
+const PARENT_MODE = !!URL_CODE || _qp.has('parent');
+const ADMIN_MODE = _qp.has('admin');
 let tab = 'driver', adminOk = sessionStorage.getItem('khatti_admin') === '1';
 
 function switchTab(t) {
-  if (PARENT_MODE) t = 'parent';
+  if (PARENT_MODE) t = 'parent'; else if (ADMIN_MODE) t = 'admin';
   tab = t;
-  ['driver','requests','parent','admin'].forEach(x => { $('sec-' + x).hidden = x !== t; $('nv-' + x).classList.toggle('on', x === t); });
+  ['driver','requests','parent','admin'].forEach(x => { $('sec-' + x).hidden = x !== t; const nv = $('nv-' + x); if (nv) nv.classList.toggle('on', x === t); });
   renderAll();
   window.scrollTo(0, 0);
   if (t === 'driver' && map) setTimeout(() => map.invalidateSize(), 120);
@@ -481,7 +495,7 @@ function navAll() {
 }
 function renderMap() {
   const d = me();
-  if (!d || $('sec-driver').hidden || $('drv-main').hidden) return;
+  if (!d || $('sec-driver').hidden || $('drv-main').hidden || !$('more-map').open) return;
   if (typeof L === 'undefined') { $('map').innerHTML = '<div class="mut" style="padding:20px">تعذّر تحميل الخريطة — تحقق من الاتصال بالإنترنت</div>'; return; }
   if (!map) {
     map = L.map('map').setView([30.04, 31.47], 11);
@@ -545,6 +559,8 @@ function copyLink(code) {
 // الطلبات وشبكة التبادل
 // =====================================================================
 const areaMatch = (d, area) => !!area && (d.route_areas || []).some(a => a && (area.includes(a) || (area.length >= 3 && a.includes(area))));
+const netOn = () => { try { return localStorage.getItem('khatti_net') === '1'; } catch (_) { return false; } };
+function toggleNet() { try { localStorage.setItem('khatti_net', netOn() ? '0' : '1'); } catch (_) {} renderAll(); toast(netOn() ? 'تم تفعيل شبكة التبادل' : 'تم إيقاف شبكة التبادل', 'info'); }
 const classify = (d, area) => { const am = areaMatch(d, area), seats = approved(d).length < d.capacity; return { matched: am && seats, am, seats }; };
 const peersOf = d => DB.driver_network.filter(n => n.driver_id === d.id).map(n => DB.drivers.find(x => x.id === n.peer_driver_id)).filter(Boolean);
 
@@ -684,13 +700,12 @@ function renderDriver() {
     const done = s.pickup_status === 'picked_up';
     const st = done ? '<span class="pill g">تم الاستلام ✓</span>' : s.pickup_status === 'near' ? '<span class="pill am">أُرسلت "أنا قربت"</span>' : '<span class="pill">بانتظار الاستلام</span>';
     return `<div class="card2 ${done ? 'ok' : ''}">
-      <div class="row sp"><div class="row" style="flex-wrap:nowrap;align-items:flex-start"><span class="num">${i + 1}</span><div><b>${esc(s.student_name)}</b><div class="mut sm">${esc(s.area)}</div>${s.absence_status === 'return_absent' ? '<span class="pill am">غائب عودة فقط</span>' : ''}</div></div>${st}</div>
-      <div class="grid4" style="margin-top:8px">
-        <a class="btn" href="tel:${esc(s.parent_phone)}">📞 اتصال</a>
-        <a class="btn sk" href="${mapsTo(s)}" target="_blank" rel="noopener">🧭 خرائط جوجل</a>
-        <button class="btn am" onclick="approach('${s.id}')">💬 أنا قربت</button>
-        <button class="btn g" ${done ? 'disabled' : ''} onclick="pickedUp('${s.id}')">✅ تم الاستلام</button>
-      </div></div>`;
+      <div class="row sp" style="flex-wrap:nowrap"><div class="row" style="flex-wrap:nowrap;align-items:flex-start"><span class="num">${i + 1}</span><div><b style="font-size:17px">${esc(s.student_name)}</b><div class="mut sm">${esc(s.area)}</div>${s.absence_status === 'return_absent' ? '<span class="pill am">غائب عودة فقط</span>' : ''}</div></div>
+        <div class="row" style="flex-wrap:nowrap"><a class="btn s" href="tel:${esc(s.parent_phone)}" aria-label="اتصال">📞</a><a class="btn s sk" href="${mapsTo(s)}" target="_blank" rel="noopener" aria-label="خرائط جوجل">🧭</a></div></div>
+      <div class="row" style="margin-top:8px;flex-wrap:nowrap">
+        <button class="btn am" style="flex:1" ${done ? 'disabled' : ''} onclick="approach('${s.id}')">💬 أنا قربت</button>
+        <button class="btn g" style="flex:1" ${done ? 'disabled' : ''} onclick="pickedUp('${s.id}')">${done ? '✓ تم الاستلام' : '✅ تم الاستلام'}</button>
+      </div>${s.pickup_status === 'near' ? '<div class="sm" style="color:#fcd34d;margin-top:4px">أُرسلت رسالة "أنا قربت"</div>' : ''}</div>`;
   }).join('') : empty('لا يوجد طلاب حاضرون في رحلة الصباح');
 
   $('dfees').innerHTML = list.length ? list.map(s => `<div class="card2"><div class="row sp"><div><b>${esc(s.student_name)}</b> ${s.fee_paid ? '<span class="pill g">مدفوع</span>' : '<span class="pill rd">غير مدفوع</span>'}</div>
@@ -705,12 +720,12 @@ function renderDriver() {
 function reqCard(s, d, kind) {
   const c = classify(d, s.area);
   const why = c.matched ? 'مطابق للمسار وتتوفر مقاعد' : !c.am ? 'المنطقة خارج مسارك' : 'السعة مكتملة';
-  return `<div class="card2 ${kind === 'm' ? 'ok' : 'warn'}"><b>${esc(s.student_name)}</b>
+  return `<div class="card2 ${c.matched ? 'ok' : 'warn'}"><b>${esc(s.student_name)}</b>
     <div class="mut sm">${esc(s.area)} • ${esc(s.school_name)}</div>
     <div class="mut sm">ولي الأمر: ${esc(s.parent_name)} • <span dir="ltr">${esc(s.parent_phone)}</span></div>
-    <div class="sm" style="color:${kind === 'm' ? '#6ee7b7' : '#fcd34d'};font-weight:800">${why}</div>
+    <div class="sm" style="color:${c.matched ? '#6ee7b7' : '#fcd34d'};font-weight:800">${why}</div>
     <div class="row" style="margin-top:8px">
-      ${kind === 'm' ? `<button class="btn g" style="flex:1" onclick="acceptStudent('${s.id}')">✓ قبول وضم</button><button class="btn am" onclick="openTransfer('${s.id}')">تحويل لزميل</button>`
+      ${kind === 'm' ? `<button class="btn g" style="flex:1" onclick="acceptStudent('${s.id}')">✓ قبول وضم</button>${netOn() ? `<button class="btn am" onclick="openTransfer('${s.id}')">تحويل لزميل</button>` : ''}`
         : `<button class="btn am" style="flex:1" onclick="openTransfer('${s.id}')">🔀 تحويل لزميل في الشبكة</button><button class="btn" onclick="acceptStudent('${s.id}')">ضم رغم ذلك</button>`}
     </div></div>`;
 }
@@ -720,7 +735,12 @@ function renderRequests() {
   if (!ok) { $('nv-bdg').hidden = true; return; }
   const inbox = myStudents(d).filter(s => s.status === 'transferred');
   const pend = myStudents(d).filter(s => s.status === 'pending' || s.status === 'overflow');
-  const m = pend.filter(s => classify(d, s.area).matched), o = pend.filter(s => !classify(d, s.area).matched);
+  const on = netOn();
+  const m = on ? pend.filter(s => classify(d, s.area).matched) : pend, o = on ? pend.filter(s => !classify(d, s.area).matched) : [];
+  $('rq-inbox-card').hidden = !(on || inbox.length); $('rq-o-card').hidden = !on; $('rq-net-card').hidden = !on;
+  $('rq-m-title').textContent = on ? 'مطابق للمسار' : 'طلبات حجز جديدة';
+  const tg = on ? '⛔ إيقاف شبكة تبادل الطلبات مع الزملاء' : '🔀 تفعيل شبكة تبادل الطلبات مع الزملاء (اختياري)';
+  $('btn-net2').textContent = tg; $('btn-net').textContent = tg;
   $('rq-in-n').textContent = inbox.length; $('rq-m-n').textContent = m.length; $('rq-o-n').textContent = o.length;
   const total = inbox.length + pend.length; $('nv-bdg').hidden = !total; $('nv-bdg').textContent = total;
   $('rq-in').innerHTML = inbox.length ? inbox.map(s => {
@@ -729,7 +749,7 @@ function renderRequests() {
       <div class="mut sm">${esc(s.area)} • ${esc(s.school_name)} • <span dir="ltr">${esc(s.parent_phone)}</span></div>
       <div class="row" style="margin-top:8px"><button class="btn g" style="flex:1" onclick="acceptStudent('${s.id}')">✓ قبول وضم للخط</button><button class="btn rd" onclick="rejectTransfer('${s.id}')">رفض</button></div></div>`;
   }).join('') : empty('لا توجد طلبات محوّلة إليك حالياً');
-  $('rq-m').innerHTML = m.length ? m.map(s => reqCard(s, d, 'm')).join('') : empty('لا طلبات مطابقة');
+  $('rq-m').innerHTML = m.length ? m.map(s => reqCard(s, d, 'm')).join('') : empty(on ? 'لا طلبات مطابقة' : 'لا توجد طلبات حجز جديدة');
   $('rq-o').innerHTML = o.length ? o.map(s => reqCard(s, d, 'o')).join('') : empty('لا طلبات فائضة');
   const peers = peersOf(d);
   $('rq-peers').innerHTML = peers.length ? peers.map(p => `<div class="card2"><div class="row sp"><span class="pill sk" dir="ltr">${esc(p.network_code)}</span>${subPill(p)}</div>
@@ -806,12 +826,11 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) addEven
   startRealtime();
   try { $('pf-phone').value = localStorage.getItem('khatti_parent_phone') || ''; } catch (_) {}
   if (PARENT_MODE) {
-    $('bnav').hidden = true; $('bk-code').value = URL_CODE; $('bk-code').readOnly = true;
-    switchTab('parent'); ptab('book');
-  } else {
-    if (new URLSearchParams(location.search).has('parent')) { switchTab('parent'); ptab('follow'); }
-    else { switchTab('driver'); ptab('book'); }
-  }
+    $('bnav').hidden = true;
+    if (URL_CODE) { $('bk-code').value = URL_CODE; $('bk-code').readOnly = true; }
+    switchTab('parent'); ptab(URL_CODE ? 'book' : 'follow');
+  } else if (ADMIN_MODE) { $('bnav').hidden = true; switchTab('admin'); }
+  else { switchTab('driver'); ptab('book'); }
 })();
 </script>
 </body>
